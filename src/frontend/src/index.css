@@ -1,0 +1,130 @@
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Dark industrial theme — SmartCast AI */
+    --background: 0.11 0.028 264;
+    --foreground: 0.97 0.005 240;
+
+    --card: 0.14 0.035 264;
+    --card-foreground: 0.95 0.008 240;
+
+    --popover: 0.14 0.035 264;
+    --popover-foreground: 0.95 0.008 240;
+
+    --primary: 0.52 0.19 260;
+    --primary-foreground: 0.99 0 0;
+
+    --secondary: 0.2 0.04 264;
+    --secondary-foreground: 0.9 0.01 240;
+
+    --muted: 0.18 0.03 264;
+    --muted-foreground: 0.6 0.04 240;
+
+    --accent: 0.78 0.13 210;
+    --accent-foreground: 0.1 0.03 264;
+
+    --destructive: 0.55 0.22 27;
+    --destructive-foreground: 0.99 0 0;
+
+    --border: 0.22 0.04 264;
+    --input: 0.22 0.04 264;
+    --ring: 0.52 0.19 260;
+
+    --radius: 0.5rem;
+
+    /* Charts */
+    --chart-1: 0.78 0.13 210;
+    --chart-2: 0.65 0.2 145;
+    --chart-3: 0.75 0.19 55;
+    --chart-4: 0.65 0.22 27;
+    --chart-5: 0.7 0.16 300;
+
+    /* Sidebar */
+    --sidebar: 0.12 0.032 264;
+    --sidebar-foreground: 0.9 0.01 240;
+    --sidebar-primary: 0.52 0.19 260;
+    --sidebar-primary-foreground: 0.99 0 0;
+    --sidebar-accent: 0.18 0.03 264;
+    --sidebar-accent-foreground: 0.9 0.01 240;
+    --sidebar-border: 0.2 0.04 264;
+    --sidebar-ring: 0.52 0.19 260;
+
+    /* Custom SmartCast tokens */
+    --sky: 0.78 0.13 210;
+    --steel: 0.62 0.04 240;
+    --surface-1: 0.11 0.028 264;
+    --surface-2: 0.14 0.035 264;
+    --surface-3: 0.17 0.04 264;
+    --glow-blue: 0 0 24px oklch(0.78 0.13 210 / 0.4);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display;
+  }
+}
+
+@layer utilities {
+  .glow-sky {
+    box-shadow: var(--glow-blue);
+  }
+
+  .text-gradient-sky {
+    background: linear-gradient(
+      135deg,
+      oklch(0.78 0.13 210),
+      oklch(0.65 0.2 260)
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-white-sky {
+    background: linear-gradient(135deg, #ffffff 0%, oklch(0.78 0.13 210) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .surface-card {
+    background: oklch(var(--surface-2));
+    border: 1px solid oklch(var(--border));
+  }
+
+  .surface-card-glow {
+    background: oklch(var(--surface-2));
+    border: 1px solid oklch(0.78 0.13 210 / 0.25);
+    box-shadow: 0 0 24px oklch(0.78 0.13 210 / 0.08), inset 0 1px 0
+      oklch(0.78 0.13 210 / 0.1);
+  }
+
+  .icon-glow {
+    filter: drop-shadow(0 0 8px oklch(0.78 0.13 210 / 0.6));
+  }
+}
