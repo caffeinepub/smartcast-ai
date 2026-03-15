@@ -10,7 +10,82 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
-export interface _SERVICE {}
+export interface Alert {
+  'description' : string,
+  'severity' : string,
+  'likelihood' : bigint,
+  'predictedFailureTime' : string,
+}
+export interface AuthorityNotification {
+  'message' : string,
+  'timestamp' : bigint,
+  'severity' : string,
+  'machineId' : string,
+  'machineName' : string,
+}
+export interface Machine {
+  'id' : string,
+  'model' : string,
+  'manufacturer' : string,
+  'predictionAlerts' : Array<Alert>,
+  'healthScore' : bigint,
+  'sensorReadings' : SensorReadings,
+  'location' : string,
+  'maintenanceHistory' : Array<MaintenanceTask>,
+}
+export interface MaintenanceTask {
+  'status' : TaskStatus,
+  'cost' : bigint,
+  'date' : string,
+  'description' : string,
+  'remarks' : string,
+}
+export interface SensorReadings {
+  'rpm' : bigint,
+  'oilLevel' : bigint,
+  'temperature' : bigint,
+  'vibration' : bigint,
+  'hoursSinceInspection' : bigint,
+  'pressure' : bigint,
+  'electricityUsage' : number,
+}
+export type TaskStatus = { 'pending' : null } |
+  { 'completed' : null };
+export interface UserProfile {
+  'name' : string,
+  'role' : string,
+  'company' : string,
+  'phone' : string,
+}
+export type UserRole = { 'admin' : null } |
+  { 'user' : null } |
+  { 'guest' : null };
+export interface _SERVICE {
+  '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
+  'addAlert' : ActorMethod<[string, Alert], undefined>,
+  'addMachine' : ActorMethod<[Machine], undefined>,
+  'addMaintenanceTask' : ActorMethod<[string, MaintenanceTask], undefined>,
+  'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'clearNotifications' : ActorMethod<[], undefined>,
+  'getAllMachines' : ActorMethod<[], Array<Machine>>,
+  'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
+  'getCallerUserRole' : ActorMethod<[], UserRole>,
+  'getMachine' : ActorMethod<[string], [] | [Machine]>,
+  'getMaintenanceHistory' : ActorMethod<[string], Array<MaintenanceTask>>,
+  'getNotifications' : ActorMethod<[], Array<AuthorityNotification>>,
+  'getPredictionAlerts' : ActorMethod<[string], Array<Alert>>,
+  'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
+  'hasUserProfile' : ActorMethod<[Principal], boolean>,
+  'isCallerAdmin' : ActorMethod<[], boolean>,
+  'notifyAuthorities' : ActorMethod<
+    [string, string, string, string],
+    undefined
+  >,
+  'removeMachine' : ActorMethod<[string], undefined>,
+  'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'updateHealthScore' : ActorMethod<[string, bigint], undefined>,
+  'updateSensorReadings' : ActorMethod<[string, SensorReadings], undefined>,
+}
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];
 export declare const idlFactory: IDL.InterfaceFactory;

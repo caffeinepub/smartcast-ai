@@ -89,10 +89,563 @@ export class ExternalBlob {
         return this;
     }
 }
-export interface backendInterface {
+export interface AuthorityNotification {
+    message: string;
+    timestamp: bigint;
+    severity: string;
+    machineId: string;
+    machineName: string;
 }
+export interface Machine {
+    id: string;
+    model: string;
+    manufacturer: string;
+    predictionAlerts: Array<Alert>;
+    healthScore: bigint;
+    sensorReadings: SensorReadings;
+    location: string;
+    maintenanceHistory: Array<MaintenanceTask>;
+}
+export interface SensorReadings {
+    rpm: bigint;
+    oilLevel: bigint;
+    temperature: bigint;
+    vibration: bigint;
+    hoursSinceInspection: bigint;
+    pressure: bigint;
+    electricityUsage: number;
+}
+export interface Alert {
+    description: string;
+    severity: string;
+    likelihood: bigint;
+    predictedFailureTime: string;
+}
+export interface UserProfile {
+    name: string;
+    role: string;
+    company: string;
+    phone: string;
+}
+export interface MaintenanceTask {
+    status: TaskStatus;
+    cost: bigint;
+    date: string;
+    description: string;
+    remarks: string;
+}
+export enum TaskStatus {
+    pending = "pending",
+    completed = "completed"
+}
+export enum UserRole {
+    admin = "admin",
+    user = "user",
+    guest = "guest"
+}
+export interface backendInterface {
+    _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
+    addAlert(machineId: string, alert: Alert): Promise<void>;
+    addMachine(machine: Machine): Promise<void>;
+    addMaintenanceTask(machineId: string, task: MaintenanceTask): Promise<void>;
+    assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    clearNotifications(): Promise<void>;
+    getAllMachines(): Promise<Array<Machine>>;
+    getCallerUserProfile(): Promise<UserProfile | null>;
+    getCallerUserRole(): Promise<UserRole>;
+    getMachine(machineId: string): Promise<Machine | null>;
+    getMaintenanceHistory(machineId: string): Promise<Array<MaintenanceTask>>;
+    getNotifications(): Promise<Array<AuthorityNotification>>;
+    getPredictionAlerts(machineId: string): Promise<Array<Alert>>;
+    getUserProfile(userId: Principal): Promise<UserProfile | null>;
+    hasUserProfile(userId: Principal): Promise<boolean>;
+    isCallerAdmin(): Promise<boolean>;
+    notifyAuthorities(machineId: string, machineName: string, message: string, severity: string): Promise<void>;
+    removeMachine(machineId: string): Promise<void>;
+    saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    updateHealthScore(machineId: string, score: bigint): Promise<void>;
+    updateSensorReadings(machineId: string, readings: SensorReadings): Promise<void>;
+}
+import type { Alert as _Alert, Machine as _Machine, MaintenanceTask as _MaintenanceTask, SensorReadings as _SensorReadings, TaskStatus as _TaskStatus, UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
+    async _initializeAccessControlWithSecret(arg0: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor._initializeAccessControlWithSecret(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor._initializeAccessControlWithSecret(arg0);
+            return result;
+        }
+    }
+    async addAlert(arg0: string, arg1: Alert): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.addAlert(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.addAlert(arg0, arg1);
+            return result;
+        }
+    }
+    async addMachine(arg0: Machine): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.addMachine(to_candid_Machine_n1(this._uploadFile, this._downloadFile, arg0));
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.addMachine(to_candid_Machine_n1(this._uploadFile, this._downloadFile, arg0));
+            return result;
+        }
+    }
+    async addMaintenanceTask(arg0: string, arg1: MaintenanceTask): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.addMaintenanceTask(arg0, to_candid_MaintenanceTask_n4(this._uploadFile, this._downloadFile, arg1));
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.addMaintenanceTask(arg0, to_candid_MaintenanceTask_n4(this._uploadFile, this._downloadFile, arg1));
+            return result;
+        }
+    }
+    async assignCallerUserRole(arg0: Principal, arg1: UserRole): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n8(this._uploadFile, this._downloadFile, arg1));
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n8(this._uploadFile, this._downloadFile, arg1));
+            return result;
+        }
+    }
+    async clearNotifications(): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.clearNotifications();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.clearNotifications();
+            return result;
+        }
+    }
+    async getAllMachines(): Promise<Array<Machine>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getAllMachines();
+                return from_candid_vec_n10(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getAllMachines();
+            return from_candid_vec_n10(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getCallerUserProfile(): Promise<UserProfile | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getCallerUserProfile();
+                return from_candid_opt_n18(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getCallerUserProfile();
+            return from_candid_opt_n18(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getCallerUserRole(): Promise<UserRole> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getCallerUserRole();
+                return from_candid_UserRole_n19(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getCallerUserRole();
+            return from_candid_UserRole_n19(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getMachine(arg0: string): Promise<Machine | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getMachine(arg0);
+                return from_candid_opt_n21(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getMachine(arg0);
+            return from_candid_opt_n21(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getMaintenanceHistory(arg0: string): Promise<Array<MaintenanceTask>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getMaintenanceHistory(arg0);
+                return from_candid_vec_n13(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getMaintenanceHistory(arg0);
+            return from_candid_vec_n13(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getNotifications(): Promise<Array<AuthorityNotification>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getNotifications();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getNotifications();
+            return result;
+        }
+    }
+    async getPredictionAlerts(arg0: string): Promise<Array<Alert>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getPredictionAlerts(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getPredictionAlerts(arg0);
+            return result;
+        }
+    }
+    async getUserProfile(arg0: Principal): Promise<UserProfile | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getUserProfile(arg0);
+                return from_candid_opt_n18(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getUserProfile(arg0);
+            return from_candid_opt_n18(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async hasUserProfile(arg0: Principal): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.hasUserProfile(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.hasUserProfile(arg0);
+            return result;
+        }
+    }
+    async isCallerAdmin(): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.isCallerAdmin();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.isCallerAdmin();
+            return result;
+        }
+    }
+    async notifyAuthorities(arg0: string, arg1: string, arg2: string, arg3: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.notifyAuthorities(arg0, arg1, arg2, arg3);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.notifyAuthorities(arg0, arg1, arg2, arg3);
+            return result;
+        }
+    }
+    async removeMachine(arg0: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.removeMachine(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.removeMachine(arg0);
+            return result;
+        }
+    }
+    async saveCallerUserProfile(arg0: UserProfile): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.saveCallerUserProfile(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.saveCallerUserProfile(arg0);
+            return result;
+        }
+    }
+    async updateHealthScore(arg0: string, arg1: bigint): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updateHealthScore(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updateHealthScore(arg0, arg1);
+            return result;
+        }
+    }
+    async updateSensorReadings(arg0: string, arg1: SensorReadings): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updateSensorReadings(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updateSensorReadings(arg0, arg1);
+            return result;
+        }
+    }
+}
+function from_candid_Machine_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Machine): Machine {
+    return from_candid_record_n12(_uploadFile, _downloadFile, value);
+}
+function from_candid_MaintenanceTask_n14(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _MaintenanceTask): MaintenanceTask {
+    return from_candid_record_n15(_uploadFile, _downloadFile, value);
+}
+function from_candid_TaskStatus_n16(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _TaskStatus): TaskStatus {
+    return from_candid_variant_n17(_uploadFile, _downloadFile, value);
+}
+function from_candid_UserRole_n19(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _UserRole): UserRole {
+    return from_candid_variant_n20(_uploadFile, _downloadFile, value);
+}
+function from_candid_opt_n18(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_UserProfile]): UserProfile | null {
+    return value.length === 0 ? null : value[0];
+}
+function from_candid_opt_n21(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_Machine]): Machine | null {
+    return value.length === 0 ? null : from_candid_Machine_n11(_uploadFile, _downloadFile, value[0]);
+}
+function from_candid_record_n12(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    id: string;
+    model: string;
+    manufacturer: string;
+    predictionAlerts: Array<_Alert>;
+    healthScore: bigint;
+    sensorReadings: _SensorReadings;
+    location: string;
+    maintenanceHistory: Array<_MaintenanceTask>;
+}): {
+    id: string;
+    model: string;
+    manufacturer: string;
+    predictionAlerts: Array<Alert>;
+    healthScore: bigint;
+    sensorReadings: SensorReadings;
+    location: string;
+    maintenanceHistory: Array<MaintenanceTask>;
+} {
+    return {
+        id: value.id,
+        model: value.model,
+        manufacturer: value.manufacturer,
+        predictionAlerts: value.predictionAlerts,
+        healthScore: value.healthScore,
+        sensorReadings: value.sensorReadings,
+        location: value.location,
+        maintenanceHistory: from_candid_vec_n13(_uploadFile, _downloadFile, value.maintenanceHistory)
+    };
+}
+function from_candid_record_n15(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    status: _TaskStatus;
+    cost: bigint;
+    date: string;
+    description: string;
+    remarks: string;
+}): {
+    status: TaskStatus;
+    cost: bigint;
+    date: string;
+    description: string;
+    remarks: string;
+} {
+    return {
+        status: from_candid_TaskStatus_n16(_uploadFile, _downloadFile, value.status),
+        cost: value.cost,
+        date: value.date,
+        description: value.description,
+        remarks: value.remarks
+    };
+}
+function from_candid_variant_n17(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    pending: null;
+} | {
+    completed: null;
+}): TaskStatus {
+    return "pending" in value ? TaskStatus.pending : "completed" in value ? TaskStatus.completed : value;
+}
+function from_candid_variant_n20(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    admin: null;
+} | {
+    user: null;
+} | {
+    guest: null;
+}): UserRole {
+    return "admin" in value ? UserRole.admin : "user" in value ? UserRole.user : "guest" in value ? UserRole.guest : value;
+}
+function from_candid_vec_n10(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_Machine>): Array<Machine> {
+    return value.map((x)=>from_candid_Machine_n11(_uploadFile, _downloadFile, x));
+}
+function from_candid_vec_n13(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_MaintenanceTask>): Array<MaintenanceTask> {
+    return value.map((x)=>from_candid_MaintenanceTask_n14(_uploadFile, _downloadFile, x));
+}
+function to_candid_Machine_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Machine): _Machine {
+    return to_candid_record_n2(_uploadFile, _downloadFile, value);
+}
+function to_candid_MaintenanceTask_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: MaintenanceTask): _MaintenanceTask {
+    return to_candid_record_n5(_uploadFile, _downloadFile, value);
+}
+function to_candid_TaskStatus_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: TaskStatus): _TaskStatus {
+    return to_candid_variant_n7(_uploadFile, _downloadFile, value);
+}
+function to_candid_UserRole_n8(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: UserRole): _UserRole {
+    return to_candid_variant_n9(_uploadFile, _downloadFile, value);
+}
+function to_candid_record_n2(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    id: string;
+    model: string;
+    manufacturer: string;
+    predictionAlerts: Array<Alert>;
+    healthScore: bigint;
+    sensorReadings: SensorReadings;
+    location: string;
+    maintenanceHistory: Array<MaintenanceTask>;
+}): {
+    id: string;
+    model: string;
+    manufacturer: string;
+    predictionAlerts: Array<_Alert>;
+    healthScore: bigint;
+    sensorReadings: _SensorReadings;
+    location: string;
+    maintenanceHistory: Array<_MaintenanceTask>;
+} {
+    return {
+        id: value.id,
+        model: value.model,
+        manufacturer: value.manufacturer,
+        predictionAlerts: value.predictionAlerts,
+        healthScore: value.healthScore,
+        sensorReadings: value.sensorReadings,
+        location: value.location,
+        maintenanceHistory: to_candid_vec_n3(_uploadFile, _downloadFile, value.maintenanceHistory)
+    };
+}
+function to_candid_record_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    status: TaskStatus;
+    cost: bigint;
+    date: string;
+    description: string;
+    remarks: string;
+}): {
+    status: _TaskStatus;
+    cost: bigint;
+    date: string;
+    description: string;
+    remarks: string;
+} {
+    return {
+        status: to_candid_TaskStatus_n6(_uploadFile, _downloadFile, value.status),
+        cost: value.cost,
+        date: value.date,
+        description: value.description,
+        remarks: value.remarks
+    };
+}
+function to_candid_variant_n7(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: TaskStatus): {
+    pending: null;
+} | {
+    completed: null;
+} {
+    return value == TaskStatus.pending ? {
+        pending: null
+    } : value == TaskStatus.completed ? {
+        completed: null
+    } : value;
+}
+function to_candid_variant_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: UserRole): {
+    admin: null;
+} | {
+    user: null;
+} | {
+    guest: null;
+} {
+    return value == UserRole.admin ? {
+        admin: null
+    } : value == UserRole.user ? {
+        user: null
+    } : value == UserRole.guest ? {
+        guest: null
+    } : value;
+}
+function to_candid_vec_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<MaintenanceTask>): Array<_MaintenanceTask> {
+    return value.map((x)=>to_candid_MaintenanceTask_n4(_uploadFile, _downloadFile, x));
 }
 export interface CreateActorOptions {
     agent?: Agent;

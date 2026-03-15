@@ -8,10 +8,198 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
-export const idlService = IDL.Service({});
+export const Alert = IDL.Record({
+  'description' : IDL.Text,
+  'severity' : IDL.Text,
+  'likelihood' : IDL.Nat,
+  'predictedFailureTime' : IDL.Text,
+});
+export const SensorReadings = IDL.Record({
+  'rpm' : IDL.Nat,
+  'oilLevel' : IDL.Nat,
+  'temperature' : IDL.Nat,
+  'vibration' : IDL.Nat,
+  'hoursSinceInspection' : IDL.Nat,
+  'pressure' : IDL.Nat,
+  'electricityUsage' : IDL.Float64,
+});
+export const TaskStatus = IDL.Variant({
+  'pending' : IDL.Null,
+  'completed' : IDL.Null,
+});
+export const MaintenanceTask = IDL.Record({
+  'status' : TaskStatus,
+  'cost' : IDL.Nat,
+  'date' : IDL.Text,
+  'description' : IDL.Text,
+  'remarks' : IDL.Text,
+});
+export const Machine = IDL.Record({
+  'id' : IDL.Text,
+  'model' : IDL.Text,
+  'manufacturer' : IDL.Text,
+  'predictionAlerts' : IDL.Vec(Alert),
+  'healthScore' : IDL.Nat,
+  'sensorReadings' : SensorReadings,
+  'location' : IDL.Text,
+  'maintenanceHistory' : IDL.Vec(MaintenanceTask),
+});
+export const UserRole = IDL.Variant({
+  'admin' : IDL.Null,
+  'user' : IDL.Null,
+  'guest' : IDL.Null,
+});
+export const UserProfile = IDL.Record({
+  'name' : IDL.Text,
+  'role' : IDL.Text,
+  'company' : IDL.Text,
+  'phone' : IDL.Text,
+});
+export const AuthorityNotification = IDL.Record({
+  'message' : IDL.Text,
+  'timestamp' : IDL.Int,
+  'severity' : IDL.Text,
+  'machineId' : IDL.Text,
+  'machineName' : IDL.Text,
+});
+
+export const idlService = IDL.Service({
+  '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+  'addAlert' : IDL.Func([IDL.Text, Alert], [], []),
+  'addMachine' : IDL.Func([Machine], [], []),
+  'addMaintenanceTask' : IDL.Func([IDL.Text, MaintenanceTask], [], []),
+  'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+  'clearNotifications' : IDL.Func([], [], []),
+  'getAllMachines' : IDL.Func([], [IDL.Vec(Machine)], ['query']),
+  'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+  'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+  'getMachine' : IDL.Func([IDL.Text], [IDL.Opt(Machine)], ['query']),
+  'getMaintenanceHistory' : IDL.Func(
+      [IDL.Text],
+      [IDL.Vec(MaintenanceTask)],
+      ['query'],
+    ),
+  'getNotifications' : IDL.Func(
+      [],
+      [IDL.Vec(AuthorityNotification)],
+      ['query'],
+    ),
+  'getPredictionAlerts' : IDL.Func([IDL.Text], [IDL.Vec(Alert)], ['query']),
+  'getUserProfile' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Opt(UserProfile)],
+      ['query'],
+    ),
+  'hasUserProfile' : IDL.Func([IDL.Principal], [IDL.Bool], ['query']),
+  'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+  'notifyAuthorities' : IDL.Func(
+      [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
+      [],
+      [],
+    ),
+  'removeMachine' : IDL.Func([IDL.Text], [], []),
+  'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'updateHealthScore' : IDL.Func([IDL.Text, IDL.Nat], [], []),
+  'updateSensorReadings' : IDL.Func([IDL.Text, SensorReadings], [], []),
+});
 
 export const idlInitArgs = [];
 
-export const idlFactory = ({ IDL }) => { return IDL.Service({}); };
+export const idlFactory = ({ IDL }) => {
+  const Alert = IDL.Record({
+    'description' : IDL.Text,
+    'severity' : IDL.Text,
+    'likelihood' : IDL.Nat,
+    'predictedFailureTime' : IDL.Text,
+  });
+  const SensorReadings = IDL.Record({
+    'rpm' : IDL.Nat,
+    'oilLevel' : IDL.Nat,
+    'temperature' : IDL.Nat,
+    'vibration' : IDL.Nat,
+    'hoursSinceInspection' : IDL.Nat,
+    'pressure' : IDL.Nat,
+    'electricityUsage' : IDL.Float64,
+  });
+  const TaskStatus = IDL.Variant({
+    'pending' : IDL.Null,
+    'completed' : IDL.Null,
+  });
+  const MaintenanceTask = IDL.Record({
+    'status' : TaskStatus,
+    'cost' : IDL.Nat,
+    'date' : IDL.Text,
+    'description' : IDL.Text,
+    'remarks' : IDL.Text,
+  });
+  const Machine = IDL.Record({
+    'id' : IDL.Text,
+    'model' : IDL.Text,
+    'manufacturer' : IDL.Text,
+    'predictionAlerts' : IDL.Vec(Alert),
+    'healthScore' : IDL.Nat,
+    'sensorReadings' : SensorReadings,
+    'location' : IDL.Text,
+    'maintenanceHistory' : IDL.Vec(MaintenanceTask),
+  });
+  const UserRole = IDL.Variant({
+    'admin' : IDL.Null,
+    'user' : IDL.Null,
+    'guest' : IDL.Null,
+  });
+  const UserProfile = IDL.Record({
+    'name' : IDL.Text,
+    'role' : IDL.Text,
+    'company' : IDL.Text,
+    'phone' : IDL.Text,
+  });
+  const AuthorityNotification = IDL.Record({
+    'message' : IDL.Text,
+    'timestamp' : IDL.Int,
+    'severity' : IDL.Text,
+    'machineId' : IDL.Text,
+    'machineName' : IDL.Text,
+  });
+  
+  return IDL.Service({
+    '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+    'addAlert' : IDL.Func([IDL.Text, Alert], [], []),
+    'addMachine' : IDL.Func([Machine], [], []),
+    'addMaintenanceTask' : IDL.Func([IDL.Text, MaintenanceTask], [], []),
+    'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'clearNotifications' : IDL.Func([], [], []),
+    'getAllMachines' : IDL.Func([], [IDL.Vec(Machine)], ['query']),
+    'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+    'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+    'getMachine' : IDL.Func([IDL.Text], [IDL.Opt(Machine)], ['query']),
+    'getMaintenanceHistory' : IDL.Func(
+        [IDL.Text],
+        [IDL.Vec(MaintenanceTask)],
+        ['query'],
+      ),
+    'getNotifications' : IDL.Func(
+        [],
+        [IDL.Vec(AuthorityNotification)],
+        ['query'],
+      ),
+    'getPredictionAlerts' : IDL.Func([IDL.Text], [IDL.Vec(Alert)], ['query']),
+    'getUserProfile' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Opt(UserProfile)],
+        ['query'],
+      ),
+    'hasUserProfile' : IDL.Func([IDL.Principal], [IDL.Bool], ['query']),
+    'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+    'notifyAuthorities' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
+        [],
+        [],
+      ),
+    'removeMachine' : IDL.Func([IDL.Text], [], []),
+    'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'updateHealthScore' : IDL.Func([IDL.Text, IDL.Nat], [], []),
+    'updateSensorReadings' : IDL.Func([IDL.Text, SensorReadings], [], []),
+  });
+};
 
 export const init = ({ IDL }) => { return []; };

@@ -7,32 +7,32 @@
 @layer base {
   :root {
     /* Dark industrial theme — SmartCast AI */
-    --background: 0.11 0.028 264;
-    --foreground: 0.97 0.005 240;
+    --background: 0.98 0.005 264;
+    --foreground: 0.1 0.02 264;
 
-    --card: 0.14 0.035 264;
-    --card-foreground: 0.95 0.008 240;
+    --card: 0.96 0.01 264;
+    --card-foreground: 0.1 0.02 264;
 
-    --popover: 0.14 0.035 264;
-    --popover-foreground: 0.95 0.008 240;
+    --popover: 0.98 0.005 264;
+    --popover-foreground: 0.1 0.02 264;
 
-    --primary: 0.52 0.19 260;
-    --primary-foreground: 0.99 0 0;
+    --primary: 0.45 0.18 264;
+    --primary-foreground: 0.98 0.005 264;
 
-    --secondary: 0.2 0.04 264;
-    --secondary-foreground: 0.9 0.01 240;
+    --secondary: 0.92 0.015 264;
+    --secondary-foreground: 0.15 0.03 264;
 
-    --muted: 0.18 0.03 264;
-    --muted-foreground: 0.6 0.04 240;
+    --muted: 0.94 0.01 264;
+    --muted-foreground: 0.45 0.02 264;
 
-    --accent: 0.78 0.13 210;
-    --accent-foreground: 0.1 0.03 264;
+    --accent: 0.92 0.015 264;
+    --accent-foreground: 0.15 0.03 264;
 
     --destructive: 0.55 0.22 27;
     --destructive-foreground: 0.99 0 0;
 
-    --border: 0.22 0.04 264;
-    --input: 0.22 0.04 264;
+    --border: 0.85 0.02 264;
+    --input: 0.85 0.02 264;
     --ring: 0.52 0.19 260;
 
     --radius: 0.5rem;
@@ -45,21 +45,21 @@
     --chart-5: 0.7 0.16 300;
 
     /* Sidebar */
-    --sidebar: 0.12 0.032 264;
-    --sidebar-foreground: 0.9 0.01 240;
-    --sidebar-primary: 0.52 0.19 260;
+    --sidebar: 0.96 0.01 264;
+    --sidebar-foreground: 0.1 0.02 264;
+    --sidebar-primary: 0.45 0.18 264;
     --sidebar-primary-foreground: 0.99 0 0;
-    --sidebar-accent: 0.18 0.03 264;
-    --sidebar-accent-foreground: 0.9 0.01 240;
-    --sidebar-border: 0.2 0.04 264;
+    --sidebar-accent: 0.92 0.015 264;
+    --sidebar-accent-foreground: 0.15 0.03 264;
+    --sidebar-border: 0.85 0.02 264;
     --sidebar-ring: 0.52 0.19 260;
 
     /* Custom SmartCast tokens */
     --sky: 0.78 0.13 210;
     --steel: 0.62 0.04 240;
-    --surface-1: 0.11 0.028 264;
-    --surface-2: 0.14 0.035 264;
-    --surface-3: 0.17 0.04 264;
+    --surface-1: 0.98 0.005 264;
+    --surface-2: 0.94 0.012 264;
+    --surface-3: 0.9 0.015 264;
     --glow-blue: 0 0 24px oklch(0.78 0.13 210 / 0.4);
   }
 }
