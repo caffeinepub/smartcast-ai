@@ -442,6 +442,9 @@ export default function App() {
     company: string;
     phone: string;
   } | null>(null);
+  const [userEmail, setUserEmail] = useState<string>(() => {
+    return localStorage.getItem("smartcast_user_email") ?? "";
+  });
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showEditProfileDialog, setShowEditProfileDialog] = useState(false);
   const [profileForm, setProfileForm] = useState({
@@ -449,6 +452,7 @@ export default function App() {
     role: "",
     company: "",
     phone: "",
+    email: "",
   });
   const [savingProfile, setSavingProfile] = useState(false);
 
@@ -680,8 +684,11 @@ export default function App() {
     e.preventDefault();
     setSavingProfile(true);
     try {
-      if (actor) await actor.saveCallerUserProfile(profileForm);
-      setUserProfile(profileForm);
+      const { email: _email, ...profileData } = profileForm;
+      if (actor) await actor.saveCallerUserProfile(profileData);
+      setUserProfile(profileData);
+      setUserEmail(_email);
+      localStorage.setItem("smartcast_user_email", _email);
       setShowProfileModal(false);
       toast.success("Profile saved!");
     } catch (e) {
@@ -697,8 +704,11 @@ export default function App() {
     e.preventDefault();
     setSavingProfile(true);
     try {
-      if (actor) await actor.saveCallerUserProfile(profileForm);
-      setUserProfile(profileForm);
+      const { email: _email, ...profileData } = profileForm;
+      if (actor) await actor.saveCallerUserProfile(profileData);
+      setUserProfile(profileData);
+      setUserEmail(_email);
+      localStorage.setItem("smartcast_user_email", _email);
       setShowEditProfileDialog(false);
       toast.success("Profile updated successfully!");
     } catch (e) {
@@ -951,18 +961,24 @@ export default function App() {
                         <p className="text-xs text-muted-foreground">
                           {userProfile.company}
                         </p>
+                        {userEmail && (
+                          <p className="text-xs text-muted-foreground">
+                            {userEmail}
+                          </p>
+                        )}
                       </div>
                     )}
                     <DropdownMenuItem
                       onClick={() => {
-                        setProfileForm(
-                          userProfile ?? {
+                        setProfileForm({
+                          ...(userProfile ?? {
                             name: "",
                             role: "",
                             company: "",
                             phone: "",
-                          },
-                        );
+                          }),
+                          email: userEmail,
+                        });
                         setShowEditProfileDialog(true);
                       }}
                       className="gap-2 cursor-pointer"
@@ -2019,7 +2035,7 @@ export default function App() {
               Measurable <span className="text-gradient-sky">Results</span>
             </h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
                 icon: TrendingDown,
@@ -2037,6 +2053,24 @@ export default function App() {
                 icon: CheckCircle2,
                 value: "92%",
                 label: "Prediction accuracy rate",
+                color: "text-violet-400",
+              },
+              {
+                icon: TrendingUp,
+                value: "+15%",
+                label: "Higher Production Efficiency",
+                color: "text-emerald-400",
+              },
+              {
+                icon: Wrench,
+                value: "2×",
+                label: "Improved Machine Lifespan",
+                color: "text-sky",
+              },
+              {
+                icon: Wifi,
+                value: "Ready",
+                label: "Supports Industry 4.0",
                 color: "text-violet-400",
               },
             ].map((item, i) => (
@@ -2498,6 +2532,25 @@ export default function App() {
                 data-ocid="profile.input"
               />
             </div>
+            <div>
+              <Label
+                htmlFor="pf-email"
+                className="text-sm font-medium mb-1.5 block"
+              >
+                Email Address
+              </Label>
+              <Input
+                id="pf-email"
+                type="email"
+                placeholder="you@example.com"
+                value={profileForm.email}
+                onChange={(e) =>
+                  setProfileForm((p) => ({ ...p, email: e.target.value }))
+                }
+                className="bg-muted/30 border-border focus:border-sky/50"
+                data-ocid="profile.input"
+              />
+            </div>
             <div className="flex gap-3 pt-2">
               <Button
                 type="submit"
@@ -2597,6 +2650,21 @@ export default function App() {
                   setProfileForm((p) => ({ ...p, phone: e.target.value }))
                 }
                 required
+                className="bg-muted/30 border-border focus:border-sky/50"
+                data-ocid="profile.input"
+              />
+            </div>
+            <div>
+              <Label className="text-sm font-medium mb-1.5 block">
+                Email Address
+              </Label>
+              <Input
+                type="email"
+                placeholder="you@example.com"
+                value={profileForm.email}
+                onChange={(e) =>
+                  setProfileForm((p) => ({ ...p, email: e.target.value }))
+                }
                 className="bg-muted/30 border-border focus:border-sky/50"
                 data-ocid="profile.input"
               />
