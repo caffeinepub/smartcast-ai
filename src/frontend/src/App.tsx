@@ -82,6 +82,14 @@ import type { AuthorityNotification, Machine } from "./backend";
 import { useActor } from "./hooks/useActor";
 import { useInternetIdentity } from "./hooks/useInternetIdentity";
 
+// Firebase stubs (replace with real imports when firebase package is available)
+const getApps = () => [];
+const initializeApp = (_config: unknown) => ({});
+const getDatabase = (_app: unknown) => ({});
+const dbRef = (_db: unknown, _path: string) => ({});
+const onValue = (_ref: unknown, _cb: unknown) => {};
+const off = (_ref: unknown) => {};
+
 // ─── Mock chart data ──────────────────────────────────────────────────────────
 // ─── 2-Month daily date labels ────────────────────────────────────────────────
 function gen2MonthDates(): string[] {
@@ -417,6 +425,17 @@ const roadmap = [
     badge: "bg-violet-500/20 text-violet-400 border-violet-500/30",
   },
 ];
+// ─── Firebase Config ─────────────────────────────────────────────────────────
+const FIREBASE_CONFIG = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID",
+};
+const IS_FIREBASE_CONFIGURED = !FIREBASE_CONFIG.apiKey.includes("YOUR_");
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export default function App() {
@@ -550,6 +569,17 @@ export default function App() {
   const [chartRange, setChartRange] = useState<"24h" | "2mo">("24h");
 
   // ─── Notifications ────────────────────────────────────────────────────────
+
+  // ─── Live Sensor Data ─────────────────────────────────────────────────────────
+  const [liveSensorData, setLiveSensorData] = useState<{
+    temperature: number;
+    vibration: number;
+    rpm: number;
+    electricity: number;
+    timestamp: string;
+  } | null>(null);
+  const [isFirebaseConnected, setIsFirebaseConnected] = useState(false);
+  const alertedThresholds = useRef(new Set<string>());
   const [notifications, setNotifications] = useState<AuthorityNotification[]>(
     [],
   );
@@ -558,7 +588,6 @@ export default function App() {
     { machineId: string; machineName: string; message: string }[]
   >([]);
   const notifiedSet = useRef(new Set<string>());
-
   // ─── Fetch profile ────────────────────────────────────────────────────────
   const fetchProfile = useCallback(async () => {
     if (!isAuthenticated || !actor) return;
@@ -862,6 +891,102 @@ export default function App() {
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // ─── Live Sensor Feed (Firebase or Simulation) ───────────────────────────────
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const handleSensorData = (data: {
+      temperature: number;
+      vibration: number;
+      rpm: number;
+      electricity: number;
+    }) => {
+      const timestamp = new Date().toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
+      setLiveSensorData({ ...data, timestamp });
+
+      const key = (label: string, val: number) =>
+        `${label}_${Math.floor(val / 5) * 5}`;
+      if (
+        data.temperature > 80 &&
+        !alertedThresholds.current.has(key("temp", data.temperature))
+      ) {
+        alertedThresholds.current.add(key("temp", data.temperature));
+        toast.warning("🌡️ Machine Overheating", {
+          description: `Temperature: ${data.temperature.toFixed(1)}°C — exceeds safe limit of 80°C`,
+          duration: 6000,
+        });
+      }
+      if (
+        data.vibration > 3 &&
+        !alertedThresholds.current.has(key("vib", data.vibration))
+      ) {
+        alertedThresholds.current.add(key("vib", data.vibration));
+        toast.warning("⚠️ Bearing Failure Risk", {
+          description: `Vibration: ${data.vibration.toFixed(2)} mm/s — exceeds safe limit of 3 mm/s`,
+          duration: 6000,
+        });
+      }
+      if (
+        data.rpm > 1600 &&
+        !alertedThresholds.current.has(key("rpm", data.rpm))
+      ) {
+        alertedThresholds.current.add(key("rpm", data.rpm));
+        toast.warning("⚡ RPM Spike Detected", {
+          description: `RPM: ${Math.round(data.rpm)} — exceeds safe limit of 1600`,
+          duration: 6000,
+        });
+      }
+      if (
+        data.electricity > 360 &&
+        !alertedThresholds.current.has(key("elec", data.electricity))
+      ) {
+        alertedThresholds.current.add(key("elec", data.electricity));
+        toast.warning("🔌 Power Surge Detected", {
+          description: `Electricity: ${Math.round(data.electricity)} kW — exceeds safe limit of 360 kW`,
+          duration: 6000,
+        });
+      }
+      setTimeout(() => {
+        alertedThresholds.current.clear();
+      }, 30000);
+    };
+
+    if (IS_FIREBASE_CONFIGURED) {
+      try {
+        const app =
+          getApps().length === 0
+            ? initializeApp(FIREBASE_CONFIG)
+            : getApps()[0];
+        const db = getDatabase(app);
+        const machineRef = dbRef(db, "machine1");
+        setIsFirebaseConnected(true);
+        onValue(machineRef, (snapshot) => {
+          const data = snapshot.val();
+          if (data) handleSensorData(data);
+        });
+        return () => off(machineRef);
+      } catch (e) {
+        console.warn("Firebase connection failed, using simulation", e);
+        setIsFirebaseConnected(false);
+      }
+    }
+
+    setIsFirebaseConnected(false);
+    const interval = setInterval(() => {
+      handleSensorData({
+        temperature: 60 + Math.random() * 20,
+        vibration: Math.random() * 3,
+        rpm: 1200 + Math.random() * 400,
+        electricity: 300 + Math.random() * 50,
+      });
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [isAuthenticated]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -1491,7 +1616,13 @@ export default function App() {
                     Machine Alerts
                   </h3>
                   {alertBanners.length > 0 && (
-                    <span className="ml-auto text-xs font-bold text-red-600 bg-red-100 px-2 py-0.5 rounded-full">
+                    <span className="relative flex h-2.5 w-2.5 shrink-0">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600" />
+                    </span>
+                  )}
+                  {alertBanners.length > 0 && (
+                    <span className="text-xs font-bold text-red-600 bg-red-100 px-2 py-0.5 rounded-full">
                       {alertBanners.length} ACTIVE
                     </span>
                   )}
@@ -1592,6 +1723,89 @@ export default function App() {
                     </div>
                   ))}
                 </div>
+
+                {/* Live Sensor Feed Panel */}
+                {liveSensorData && (
+                  <div className="mb-4 p-4 rounded-xl border bg-white shadow-sm">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <Wifi className="w-4 h-4 text-blue-500" />
+                        <span className="text-sm font-semibold text-gray-800">
+                          Live Sensor Feed
+                        </span>
+                        <span
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold ${isFirebaseConnected ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"}`}
+                        >
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full animate-pulse ${isFirebaseConnected ? "bg-green-500" : "bg-orange-500"}`}
+                          />
+                          {isFirebaseConnected ? "LIVE" : "SIMULATED"}
+                        </span>
+                      </div>
+                      <span className="text-xs text-gray-400">
+                        Updated: {liveSensorData.timestamp}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      <div
+                        className={`rounded-lg p-3 text-center border ${liveSensorData.temperature > 80 ? "bg-red-50 border-red-200" : "bg-blue-50 border-blue-100"}`}
+                      >
+                        <Thermometer
+                          className={`w-4 h-4 mx-auto mb-1 ${liveSensorData.temperature > 80 ? "text-red-500" : "text-blue-500"}`}
+                        />
+                        <div
+                          className={`text-lg font-bold tabular-nums ${liveSensorData.temperature > 80 ? "text-red-600" : "text-blue-700"}`}
+                        >
+                          {liveSensorData.temperature.toFixed(1)}°C
+                        </div>
+                        <div className="text-xs text-gray-500">Temperature</div>
+                      </div>
+                      <div
+                        className={`rounded-lg p-3 text-center border ${liveSensorData.vibration > 3 ? "bg-red-50 border-red-200" : "bg-purple-50 border-purple-100"}`}
+                      >
+                        <Zap
+                          className={`w-4 h-4 mx-auto mb-1 ${liveSensorData.vibration > 3 ? "text-red-500" : "text-purple-500"}`}
+                        />
+                        <div
+                          className={`text-lg font-bold tabular-nums ${liveSensorData.vibration > 3 ? "text-red-600" : "text-purple-700"}`}
+                        >
+                          {liveSensorData.vibration.toFixed(2)}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          Vibration (mm/s)
+                        </div>
+                      </div>
+                      <div
+                        className={`rounded-lg p-3 text-center border ${liveSensorData.rpm > 1600 ? "bg-red-50 border-red-200" : "bg-green-50 border-green-100"}`}
+                      >
+                        <Settings
+                          className={`w-4 h-4 mx-auto mb-1 ${liveSensorData.rpm > 1600 ? "text-red-500" : "text-green-600"}`}
+                        />
+                        <div
+                          className={`text-lg font-bold tabular-nums ${liveSensorData.rpm > 1600 ? "text-red-600" : "text-green-700"}`}
+                        >
+                          {Math.round(liveSensorData.rpm)}
+                        </div>
+                        <div className="text-xs text-gray-500">RPM</div>
+                      </div>
+                      <div
+                        className={`rounded-lg p-3 text-center border ${liveSensorData.electricity > 360 ? "bg-red-50 border-red-200" : "bg-yellow-50 border-yellow-100"}`}
+                      >
+                        <Zap
+                          className={`w-4 h-4 mx-auto mb-1 ${liveSensorData.electricity > 360 ? "text-red-500" : "text-yellow-600"}`}
+                        />
+                        <div
+                          className={`text-lg font-bold tabular-nums ${liveSensorData.electricity > 360 ? "text-red-600" : "text-yellow-700"}`}
+                        >
+                          {Math.round(liveSensorData.electricity)}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          Electricity (kW)
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Chart Range Toggle */}
                 <div
