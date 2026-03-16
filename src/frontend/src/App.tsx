@@ -35,6 +35,7 @@ import {
   Brain,
   CheckCircle2,
   ChevronDown,
+  Clock,
   Cloud,
   Cpu,
   Database,
@@ -1192,7 +1193,7 @@ export default function App() {
                 bg: "bg-amber-500/10 border-amber-500/25",
               },
               {
-                icon: IndianRupee,
+                icon: Clock,
                 value: "23h",
                 label: "average downtime per incident",
                 color: "text-orange-400",
@@ -2056,7 +2057,7 @@ export default function App() {
                 color: "text-violet-400",
               },
               {
-                icon: TrendingUp,
+                icon: Clock,
                 value: "+15%",
                 label: "Higher Production Efficiency",
                 color: "text-emerald-400",
